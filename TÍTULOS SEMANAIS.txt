@@ -1,0 +1,14 @@
+SET DATEFORMAT DMY
+SELECT
+		A.DocId [DOCUMENTO],
+		concat(A.TitNumCompleto,'') [BOLETO],
+		A.TitDataVencimento [DATA VENCIMENTO],
+		A.TitDataPagamento [DATA PAGAMENTO],
+		(A.TitValor-A.TitValorDesc)+ISNULL(a.TitValorJuros,0) [VALOR TITULO],
+		A.TitStatusDescr [STATUS]
+
+
+FROM TbTitulo A
+
+WHERE A.CCId IS NULL OR
+A.CCId = 3

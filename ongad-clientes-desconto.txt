@@ -1,0 +1,9 @@
+SELECT A.CliId[CLIENTE], (C.LstPrcFatorMarkup-1)*-1 [DESC.PROMOCIONAL], D.DescPercentual [DESC.ANTECIPADO]
+FROM TbCliente A
+LEFT JOIN TbListaPrecoCliente B
+ON B.CliId = A.CliId
+LEFT JOIN TbListaPreco C
+ON C.LstPrcId = B.LstPrcId
+LEFT JOIN TbDesconto D ON D.DescId = A.DescId
+WHERE C.EmpId = 2
+ORDER BY A.CliId

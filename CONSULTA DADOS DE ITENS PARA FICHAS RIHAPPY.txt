@@ -1,0 +1,39 @@
+SELECT
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemDescr [DESCRIÇÃO],
+		
+		A.ItemBarrasEmbMasterId [COD BARRAS CX MASTER],
+		A.ItemQtdCaixasEmbMaster [QTD CX MASTER],
+		A.ItemPesoEmbMaster [PESO CX MASTER],
+		A.ItemComprimentoEmbMaster [COMPR. CX MASTER],
+		A.ItemLarguraEmbMaster [LARG. CX MASTER],
+		A.ItemAlturaEmbMaster [ALT. CX MASTER],
+
+		A.ItemBarrasEmbDisplayId [COD BARRAS DISPLAY],
+		A.ItemQtdCaixasEmbDisplay [QTD DISPLAY],
+		A.ItemPesoEmbDisplay [PESO DISPLAY],
+		A.ItemComprimentoEmbDisplay [COMPR. DISPLAY],
+		A.ItemLarguraEmbDisplay [LARG. DISPLAY],
+		A.ItemAlturaEmbDisplay [ALT. DISPLAY],
+
+		A.ItemBarrasTributavelId [COD BARRAS UNIDADE],
+		A.ItemPesoEmbPecaComEmb [PESO UN PEÇA C/ EMB],
+		A.ItemComprimentoEmbPecaComEmb [COMPR. PEÇA C/ EMB],
+		A.ItemLarguraEmbPecaComEmb [LARG. PEÇA C/ EMB],
+		A.ItemAlturaEmbPecaComEmb [ALT. PEÇA C/ EMB],
+		
+		A.ItemComprimentoEmbPecaSemEmb [COMPR. PEÇA S/ EMB],
+		A.ItemLarguraEmbPecaSemEmb [LARG. PEÇA S/ EMB],
+		A.ItemAlturaEmbPecaSemEmb [ALT. PEÇA S/ EMB],
+		
+		A.ClassFisId [CLASSIF FISCAL]			
+
+		
+
+		
+
+FROM
+		TbItem A LEFT JOIN
+		TbClassificacaoFiscal B ON B.ClassFisId = A.ClassFisId
+
+WHERE A.EmpId IN (2)

@@ -1,0 +1,60 @@
+SELECT	
+
+		B.ReprId [Representante],
+		A.CliId [Cod Cliente],
+		A.CliNomeRazaoSocial	[Razão Social],
+		A.CliApelidoNomeAbrev	[Apelido],
+		G.GpEconNome		[Grupo Economico],
+		D.LstPrcDescr		[Desconto],
+		E.CondPagDescr 		[Cond. Pagamento],
+		oa.NFDataEmissao	[Última Data],
+		oa.NFValorTotal		[Último Valor],
+				
+	
+CASE
+	when A.CliEnquadramentoFiscal = 0 then 'Lucro Presumido'  
+	when A.CliEnquadramentoFiscal = 1 then 'Lucro Real'  
+	when A.CliEnquadramentoFiscal = 2 then 'Simples Nacional'
+	when A.CliEnquadramentoFiscal = 3 then 'Simples Nacional (Limite Excedido)'
+	END AS "Enquad. Fiscal",
+
+CASE 
+	when A.CliAtivo = 0 then 'Inativo'
+	when A.CliAtivo = 1 then 'Ativo'
+	END AS "Status Cliente"
+	
+
+FROM	TbCliente		 		A			 	LEFT JOIN
+		TbNotaFiscal			H ON A.CliId = H.CliId		LEFT JOIN
+		TbRepresentanteCliente		B ON A.CliId = B.CliId		LEFT JOIN
+		TbListaPrecoCliente		C ON A.CliId = C.CliId		LEFT JOIN
+		TbListaPreco			D ON C.LstPrcId = D.LstPrcId	LEFT JOIN
+		TbCondicaoPagamento		E ON A.CondPagId = E.CondPagId	LEFT JOIN
+		TbClienteGrupoEconomico		F ON A.CliId = F.CliId		LEFT JOIN
+		TbGrupoEconomico		G ON F.GpEconId = G.GpEconId	
+
+		outer apply
+(
+    select top(1)
+		NF.NFNum,
+        NF.NFDataEmissao,
+        NF.NFValorTotal
+    from TbNotaFiscal NF
+    where
+        NF.CliId = a.CliId
+    order by
+        NF.NFNum desc    
+) as oa
+				
+				
+WHERE	
+		D.EmpId = 2
+	AND	A.CliTipoPessoa = 'J'
+	AND	A.CliTipoCadastro = 0
+	AND	B.ReprId = 19
+
+	
+GROUP BY A.CliId, CliAtivo, A.CliNomeRazaoSocial, A.CliApelidoNomeAbrev, G.GpEconNome, B.ReprId, D.LstPrcDescr, E.CondPagDescr, A.CliEnquadramentoFiscal, oa.NFDataEmissao, oa.NFValorTotal
+
+
+ORDER BY A.CliId

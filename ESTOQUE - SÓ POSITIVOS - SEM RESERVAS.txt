@@ -1,0 +1,45 @@
+SELECT															
+	A.ItemEmpresaId [COD ITEM],														
+	A.ItemDescr [DESCRIÇÃO],														
+	Estoque.QTD1-(reservas.QTD1*-1) [QTDADE]															
+															
+FROM															
+	TbItem A 														
+															
+OUTER APPLY															
+	(select AAA.ItemEmpresaId, SUM(BBB.SaldoFisicoDisponivel) [QTD1]														
+	from														
+		TbItem AAA													
+LEFT JOIN	VwSaldoDepositoItem BBB														
+		ON AAA.ItemId = BBB.ItemId
+	WHERE														
+		AAA.ItemEmpresaId = A.ItemEmpresaId													
+AND		BBB.DepId in (2,3,4,191,264)
+
+															
+	GROUP BY														
+		AAA.ItemEmpresaId) as Estoque
+
+OUTER APPLY															
+	(select AAA.ItemEmpresaId, SUM(BBB.SaldoFisicoDisponivel) [QTD1]														
+	from														
+		TbItem AAA													
+LEFT JOIN	VwSaldoDepositoItem BBB														
+		ON AAA.ItemId = BBB.ItemId
+	WHERE														
+		AAA.ItemEmpresaId = A.ItemEmpresaId													
+AND		BBB.DepId not in (2,3,4,138,139,191,264)
+															
+	GROUP BY														
+		AAA.ItemEmpresaId) as reservas													
+															
+									
+															
+WHERE															
+	A.EmpId IN (2,3) AND
+	Estoque.QTD1-(reservas.QTD1*-1) > 0
+															
+															
+															
+ORDER BY															
+	A.ItemId

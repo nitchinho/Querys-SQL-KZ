@@ -1,0 +1,57 @@
+SET DATEFORMAT DMY
+SELECT
+
+		C.CliId [COD CLIENTE],
+		B.NFNum [Nº NOTA],
+		F.ItemEmpresaId [CÓD ITEM],
+		F.ItemDescr [DESCRIÇÃO],
+		K1.LtItemExternoNum [LOTE EXTERNO],
+		K1.LtItemDataValidade [VALIDADE]
+		
+		
+
+FROM
+
+
+		TbItemNotaFiscal A
+JOIN		TbItem F ON A.ItemId = F.ItemId
+LEFT JOIN	TbLinhaProduto G ON F.LinProdId = G.LinProdId
+LEFT JOIN	TbFamiliaMaterial H ON F.FamMatId = H.FamMatId
+JOIN		TbNotaFiscal B ON A.NFId = B.NFId
+LEFT JOIN	TbCliente C ON B.CliId = C.CliId
+LEFT JOIN	TbRepresentanteCliente D ON C.CliId = D.CliId
+LEFT JOIN	TbRepresentante E ON D.ReprId = E.ReprId
+LEFT JOIN	TbClienteGrupoEconomico I ON I.CliId = C.CliId
+LEFT JOIN	TbGrupoEconomico J ON J.GpEconId = I.GpEconId
+LEFT JOIN	TbLoteItemNotaFiscal K ON K.ItemNFId = A.ItemNFId
+LEFT JOIN	TbLoteItem K1 ON K1.LtItemId = K.LtItemId
+			
+
+
+OUTER APPLY
+(
+		SELECT	LOC.UFId
+		FROM	TbEnderecoCliente EC LEFT JOIN
+			TbTipoEnderecoCliente TEC ON TEC.EndCliId = EC.EndCliId LEFT JOIN
+			TbLocalidade LOC ON LOC.LocalId = EC.LocalId
+		WHERE	TEC.CliEndCliTipo = 'F' AND
+			EC.CliId = C.CliId)
+[ENDER]
+
+
+WHERE
+		B.NFDataEmissao BETWEEN '01/01/2015' AND '31/12/2021'
+AND		A.NatOpTipo = 'M'
+AND		B.NFStatus = 'I'
+AND		A.NatOpDescr like ('%VENDA%')
+AND		C.CliId = 14393
+
+
+ORDER BY
+		B.NFDataEmissao,
+		E.ReprId,
+		B.NFNum,
+		C.CliId,
+		A.ItemEmpresaId
+
+

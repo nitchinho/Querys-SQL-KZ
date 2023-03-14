@@ -1,0 +1,11 @@
+SELECT
+		B.LstPrcId [LISTA DE PREÇO],
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemDescr [ITEM DESCRIÇÃO],
+		B.ItemLstPrcFatorMarkup [MARKUP]
+FROM
+			TbItem A
+LEFT JOIN	TbItemListaPreco B
+			ON B.ItemId = A.ItemId
+
+WHERE B.LstPrcId > 0

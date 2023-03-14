@@ -1,0 +1,53 @@
+SELECT 
+		A.CliId [COD CLIENTE],
+		A.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		A.CliApelidoNomeAbrev [APELIDO],
+		A.CliCPFCNPJ [CNPJ],
+		1-G1.LstPrcFatorMarkup [DESCONTO],
+		D.ReprApelidoNomeAbrev [NOME REPRESENTANTE],
+		CASE
+		WHEN (A.CliAtivo=1) THEN 'ATIVO'
+		WHEN (A.CliAtivo=0) THEN 'INATIVO'
+		END [STATUS],
+		CASE
+		WHEN (A.CliSuspenso=1) THEN 'SUSPENSO'
+		WHEN (A.CliSuspenso=0) THEN ''
+		END [SUSPENSO],
+		oa.NFDataEmissao	[Última Data],
+		oa.NFValorTotal		[Último Valor]
+
+
+		
+FROM
+		TbCliente A LEFT JOIN
+		TbRepresentanteCliente C ON A.CliId = C.CliId LEFT JOIN
+		TbRepresentante D ON C.ReprId = D.ReprId LEFT JOIN
+		TbEnderecoCliente E ON E.CliId = A.CliId LEFT JOIN
+		TbLocalidade F ON F.LocalId = E.LocalId LEFT JOIN
+		TbTipoEnderecoCliente E1 ON E1.EndCliId = E.EndCliId LEFT JOIN
+		TbListaPrecoCliente G ON G.CliId = A.CliId LEFT JOIN
+		TbListaPreco G1 ON G1.LstPrcId = G.LstPrcId
+		OUTER APPLY
+		
+		(
+    select top(1)
+		NF.NFNum,
+        NF.NFDataEmissao,
+        NF.NFValorTotal
+    from TbNotaFiscal NF
+    where
+        NF.CliId = a.CliId
+    order by
+        NF.NFNum desc    
+) as oa
+		
+		
+		
+WHERE 
+		A.CliContribICMS = 0
+AND		A.CliTipoPessoa = 'J'
+AND		E1.CliEndCliTipo = 'F'
+AND		G1.EmpId = 2
+
+
+ORDER BY A.CliId

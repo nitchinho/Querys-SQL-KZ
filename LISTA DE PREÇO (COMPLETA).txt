@@ -1,0 +1,71 @@
+SELECT
+	CASE
+		WHEN (EmpId =3) THEN 'DOCES' ELSE 'BRINQUEDOS'
+	END [D/B],
+	A.ItemEmpresaId [COD],
+	CASE
+		WHEN (ItemSuspenso = 0) THEN 'S' ELSE 'N'
+	END [DV],
+	A.ItemDescr [DESCRIÇÃO],
+	NULL [PREVISÃO DE CHEGADA],
+	NULL [PLANO MÍDIA 2019],
+	CASE
+		WHEN (TbEstoque.QTD >=3000) THEN 'ALTO'
+		WHEN (TbEstoque.QTD >=1000) THEN 'MÉDIO'
+		WHEN (TbEstoque.QTD <1000) THEN 'BAIXO OU ZERO'
+		END [STATUS ESTOQUE],
+	ISNULL(ItemBarrasId,0) [EAN],
+	A.ClassFisId [CLASSIFIC. FISCAL],
+	ISNULL(ItemRegDclrImpEmbMaster,0) [MASTER],
+	UniMedAbrev [UV],
+		CASE
+		WHEN (ItemCubagPadrao = 0) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 1) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 2) THEN (ItemQtdCaixasEmbFilha)
+		WHEN (ItemCubagPadrao = 3) THEN (ItemQtdCaixasEmbDisplay)
+		WHEN (ItemCubagPadrao = 4) THEN (1)
+		WHEN (ItemCubagPadrao = 5) THEN (1)
+	END [EMB],
+	ItemCubagPadraoDescr [CUBAGEM PADRÃO],
+		CASE
+		WHEN (ItemCubagPadrao = 0) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 1) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 2) THEN (ItemQtdCaixasEmbFilha)
+		WHEN (ItemCubagPadrao = 3) THEN (ItemQtdCaixasEmbDisplay)
+		WHEN (ItemCubagPadrao = 4) THEN (1)
+		WHEN (ItemCubagPadrao = 5) THEN (1)
+		END [Qtd Min. Venda],
+		ROUND (ItemPrecoReferencia,2,2) [VLR. BRUTO (S/ IPI)],
+		CASE
+		WHEN (A.ItemOrigem = 'N') THEN (0)
+		ELSE ROUND((B.ClassFisAliquotaIPI/100),4) END [IPI],
+
+		CASE
+		WHEN (A.ItemOrigem = 'N') THEN (ItemPrecoReferencia)
+		ELSE ((ItemPrecoReferencia*(B.ClassFisAliquotaIPI/100))+ItemPrecoReferencia)
+		END [VLR. BRUTO (C/ IPI)]
+
+FROM
+	TbItem A JOIN
+	TbClassificacaoFiscal B ON B.ClassFisId = A.ClassFisId
+	
+	OUTER APPLY
+	(select AA.ItemEmpresaId, SUM(BB.SaldoFisicoDisponivel) [QTD]
+from
+			TbItem AA
+LEFT JOIN	VwSaldoDepositoItem BB
+			ON AA.ItemId = BB.ItemId
+WHERE
+		AA.ItemEmpresaId = A.ItemEmpresaId
+AND BB.DepId IN (2,3,4,191)
+GROUP BY AA.ItemEmpresaId) as TbEstoque
+
+WHERE
+		EmpId IN (2,3)
+AND		ItemAtivo = 1
+AND		ItemExibeConsultasLstPrc = 1
+AND		ItemPrecoReferencia >0
+AND		ItemBarrasId > '0'
+AND		ItemRegDclrImpEmbMaster > '0'
+
+ORDER BY A.ItemEmpresaId

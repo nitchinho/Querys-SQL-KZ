@@ -1,0 +1,36 @@
+SELECT
+		ItemEmpresaId [COD ITEM],
+		ItemBarrasId [COD EAN],
+		ItemDescr [DESCRIÇÃO],
+		ItemQtdCaixasEmbMaster [QTD CX MASTER],
+		ItemLarguraEmbMaster [LARGURA-MASTER],
+		ItemAlturaEmbMaster [ALTURA-MASTER],
+		ItemComprimentoEmbMaster [COMPRIMENTO-MASTER],
+		ItemPesoEmbMaster [PESO MASTER],
+		ItemQtdCaixasEmbfILHA [QTD CX FILHA],
+		ItemLarguraEmbFilha [LARGURA-FILHA],
+		ItemAlturaEmbFilha [ALTURA-FILHA],
+		ItemComprimentoEmbFilha [COMPRIMENTO-FILHA],
+		ItemPesoEmbFilha [PESO FILHA],
+		ItemQtdCaixasEmbDisplay [QTD DISPLAY],
+		ItemLarguraEmbDisplay [LARGURA-DISPLAY],
+		ItemAlturaEmbDisplay [ALTURA-DISPLAY],
+		ItemComprimentoEmbDisplay [COMPRIMENTO-DISPLAY],
+		ItemPesoEmbDisplay [PESO DISPLAY],
+		ItemLarguraEmbPecaComEmb [LARGURA-PEÇAEMB],
+		ItemAlturaEmbPecaComEmb [ALTURA-PEÇAEMB],
+		ItemComprimentoEmbPecaComEmb [COMPRIMENTO-PEÇAEMB],
+		ItemPesoEmbPecaComEmb [PESO PEÇAEMB],
+		ItemLarguraEmbPecaSemEmb [LARGURA-PEÇA],
+		ItemAlturaEmbPecaSemEmb [ALTURA-PEÇA],
+		ItemComprimentoEmbPecaSemEmb [COMPRIMENTO-PEÇA],
+		ItemPesoEmbPecaSemEmb [PESO PEÇA],
+		ItemPrecoReferencia [PREÇO REFERÊNCIA],
+		ItemCubagPadraoDescr [CUBAGEM PADRÃO],
+		ItemStatus [STATUS]
+
+		
+FROM
+		TbItem
+WHERE
+		EmpId IN (2,3)

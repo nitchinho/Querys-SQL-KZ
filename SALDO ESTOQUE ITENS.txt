@@ -1,0 +1,68 @@
+SELECT															
+	A.ItemEmpresaId [COD ITEM],														
+	A.ItemDescr [DESCRIÇÃO],														
+	Estoque.QTD1-(reservas.QTD1*-1)-(SEPARACAO.QTD1)-(PEDIDO.QTD1) [QTDADE]															
+															
+FROM															
+	TbItem A 														
+															
+OUTER APPLY															
+	(select AAA.ItemEmpresaId, SUM(BBB.SaldoFisicoDisponivel) [QTD1]														
+	from														
+		TbItem AAA													
+LEFT JOIN	VwSaldoDepositoItem BBB														
+		ON AAA.ItemId = BBB.ItemId
+	WHERE														
+		AAA.ItemEmpresaId = A.ItemEmpresaId													
+AND		BBB.DepId in (3)
+
+															
+	GROUP BY														
+		AAA.ItemEmpresaId) as Estoque
+
+OUTER APPLY															
+	(select AAA.ItemEmpresaId, SUM(BBB.SaldoFisicoDisponivel) [QTD1]														
+	from														
+		TbItem AAA													
+LEFT JOIN	VwSaldoDepositoItem BBB														
+		ON AAA.ItemId = BBB.ItemId
+	WHERE														
+		AAA.ItemEmpresaId = A.ItemEmpresaId													
+AND		BBB.DepId not in (3)
+															
+	GROUP BY														
+		AAA.ItemEmpresaId) as reservas	
+		
+OUTER APPLY															
+	(select AAA.ItemEmpresaId, SUM(BBB.ItemSaldoSeparacaoPedidoVenda) [QTD1]														
+	from														
+		TbItem AAA													
+LEFT JOIN	VwItemSaldoSeparacaoPedidoVenda BBB														
+		ON AAA.ItemId = BBB.ItemId
+	WHERE														
+		AAA.ItemEmpresaId = A.ItemEmpresaId													
+															
+	GROUP BY														
+		AAA.ItemEmpresaId) as SEPARACAO
+
+OUTER APPLY															
+	(select AAA.ItemEmpresaId, SUM(BBB.ItemSaldoPedidosVenda) [QTD1]														
+	from														
+		TbItem AAA													
+LEFT JOIN	VwItemSaldoPedidoVenda BBB														
+		ON AAA.ItemId = BBB.ItemId
+	WHERE														
+		AAA.ItemEmpresaId = A.ItemEmpresaId													
+															
+	GROUP BY														
+		AAA.ItemEmpresaId) AS PEDIDO
+									
+															
+WHERE															
+	A.EmpId IN (2,3) AND
+	Estoque.QTD1-(reservas.QTD1*-1) > 0
+															
+															
+															
+ORDER BY															
+	A.ItemId

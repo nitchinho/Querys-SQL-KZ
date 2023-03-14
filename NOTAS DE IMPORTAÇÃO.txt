@@ -1,0 +1,24 @@
+SET DATEFORMAT DMY
+SELECT
+		A.NFDataEmissao [DATA EMISSÃO],
+		A.NFNum [NF Nº],
+		B.ItemEmpresaId [COD ITEM],
+		C.ItemDescr [DESCRIÇÃO],
+		B.ItemNFValorUnitario [VALOR UNITÁRIO],
+		B.ItemNFQtd [QTD],
+		B.ItemNFValorTotal [TOTAL]
+		
+		
+FROM
+			TbNotaFiscal A
+LEFT JOIN	TbItemNotaFiscal B
+			ON B.NFId = A.NFId
+LEFT JOIN	TbItem C
+			ON C.ItemId = B.ItemId
+
+WHERE
+		FornecId = 1
+AND		A.NFStatusDescr = 'Impresso'
+
+ORDER BY
+A.NFNum

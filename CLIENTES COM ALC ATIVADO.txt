@@ -1,0 +1,24 @@
+SELECT
+		A.CliId [COD CLIENTE],
+		A.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		A.CliApelidoNomeAbrev [APELIDO],
+		A.CliCPFCNPJ [CNPJ],
+		E.LocalNome [MUNICIPIO],
+		E.UFId [ESTADO]
+
+FROM TbCliente A
+OUTER APPLY
+	(	SELECT B.CliId, D.LocalNome, D.UFId
+		FROM
+				TbEnderecoCliente B
+	LEFT JOIN	TbTipoEnderecoCliente C
+				ON C.EndCliId = B.EndCliId
+	LEFT JOIN	TbLocalidade D
+				ON D.LocalId = B.LocalId
+	WHERE	C.CliEndCliTipo = 'F'
+	
+	AND	A.CliId = B.CliId
+	)[E]
+
+
+WHERE A.CliAreaLivreComercio = 1

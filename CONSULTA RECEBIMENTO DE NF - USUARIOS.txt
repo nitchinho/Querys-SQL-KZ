@@ -1,0 +1,20 @@
+SELECT
+		A.RecNFDataHoraIncl [DATA INCLUSÃO],
+		A.RecNFId [NÚMERO RECEBIMENTO],
+		A.RecNFNum [NÚMERO DA NF],
+		A.CliId [COD CLIENTE],
+		B.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		B.CliCPFCNPJ [CNPJ],
+		D.GpEconId [COD GRUPO],
+		D.GpEconNome [GRUPO ECONOMICO],
+		E.UsuNome [NOME DO USUÁRIO]
+FROM
+			TbRecebimentoNotaFiscal A
+LEFT JOIN	TbCliente B ON B.CliId = A.CliId
+LEFT JOIN	TbClienteGrupoEconomico C ON C.CliId = B.CliId
+LEFT JOIN	TbGrupoEconomico D ON D.GpEconId = C.GpEconId
+LEFT JOIN	TbUsuario E ON E.UsuId = A.UsuInclId
+
+WHERE D.GpEconId = 27
+
+ORDER BY A.RecNFDataHoraIncl

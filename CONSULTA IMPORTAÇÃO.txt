@@ -1,0 +1,39 @@
+SELECT 
+		A.NFId [CÓDIGO],
+		A.NFNum [NÚMERO NF],
+		B.DclrImpNum [NUMERO DECLARAÇÃO],
+		D.ItemEmpresaId [COD ITEM],
+		D.ItemDescr [DESCRIÇÃO ITEM],
+		CAST (C.ItemNFValorUnitario AS NUMERIC(15,4)) [VALOR UNITÁRIO],
+		C.ItemNFQtd [QTD],
+		C.ItemNFValorTotal [TOTAL],
+		ISNULL(B.DclrImpFornecedorRefNum,'') [Nº REF EMP],
+		E.CotMdNFValor [COTAÇÃO U$]
+		
+		
+
+
+
+
+
+FROM
+			TbNotaFiscal A
+LEFT JOIN	TbDeclaracaoImportacao B
+			ON B.DclrImpId = A.DclrImpId
+LEFT JOIN	TbItemNotaFiscal C
+			ON C.NFId = A.NFId
+LEFT JOIN	TbItem D
+			ON D.ItemId = C.ItemId
+LEFT JOIN	TbCotacaoMoedaNotaFiscal E
+			ON E.NFId = A.NFId
+LEFT JOIN	TbMoeda F
+			ON F.MdId = E.MdId
+
+
+
+
+WHERE
+		A.FornecId = 1
+
+
+ORDER BY A.NFNum

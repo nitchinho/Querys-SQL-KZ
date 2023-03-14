@@ -1,0 +1,12 @@
+SELECT
+		A.RotEntId [ROTEIRO],
+		B.NFNum [NF Nº],
+		A.NFRotEntObservacao [OBSERVAÇÃO]
+
+
+FROM
+		TbNotaFiscalRoteiroEntrega A JOIN
+		TbNotaFiscal B ON B.NFId = A.NFId
+
+WHERE A.RotEntId = 19268
+

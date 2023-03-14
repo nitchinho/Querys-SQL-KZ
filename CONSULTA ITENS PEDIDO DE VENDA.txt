@@ -1,0 +1,33 @@
+select
+		A.PedVndId [Nº PEDIDO],
+		C.CliId [CLIENTE],
+		F.CliNomeRazaoSocial [RAZAO SOCIAL],
+		G.SegMercDescr [SEGMENTO],
+		B.ItemEmpresaId [COD ITEM],
+		B.ItemDescr	[DESC. ITEM],
+		D.LinProdDescr [LINHA PRODUTO],
+		E.FamMatDescr [FAMILIA],
+		A.ItemPedVndQtd [QTD],
+		A.ItemPedVndPrecoUnitario [PREÇO],
+		(A.ItemPedVndQtd*A.ItemPedVndPrecoUnitario)[TOTAL],
+		((A.ItemPedVndQtd*A.ItemPedVndPrecoUnitario)/4.35)[TOTAL U$]
+				
+
+from	
+			TbItemPedidoVenda A
+LEFT JOIN	TbItem B
+			ON A.ItemId = B.ItemId
+LEFT JOIN	TbPedidoVenda C
+			ON C.PedVndId = A.PedVndId
+LEFT JOIN	TbLinhaProduto D
+			ON D.LinProdId = B.LinProdId
+LEFT JOIN	TbFamiliaMaterial E
+			ON E.FamMatId = B.FamMatId
+LEFT JOIN	TbCliente F
+			ON F.CliId = C.CliId
+LEFT JOIN	TbSegmentoMercado G
+			ON G.SegMercId = F.SegMercId
+
+	
+
+where C.PedVndId = 344040

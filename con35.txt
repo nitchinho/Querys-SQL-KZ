@@ -1,0 +1,73 @@
+SELECT A.NFId,          
+        A.NFNum,A.NFFrete,          
+        A.NFValorTotal,          
+        A.NFDataEmissao,  
+        G.UFId,       
+        G.LocalNome,          
+        A.NFStatus,           
+        A.CliId,    
+        D.DestNFApelidoNomeAbrev,
+
+
+        e.TpLogrAbrev + ' ' + e.EndDestNFLogradouro + ', '   + e.EndDestNFNumero + ', ' +ISNULL(e.EndDestNFComplemento,'') + ' , ' + e.EndDestNFBairro + ' - ' + e.CEPNum + ' - ' + g.LocalNome + ', ' + G.UFId [End. entrega Cliente],
+
+--        e.enddestnflogradouro + ',' +
+--        e.enddestnfbairro + ',' +
+ --       CAST(e.enddestnfnumero as varchar(5))[Endreco],                       
+
+
+        A.TranspId, 
+        C.TranspApelidoNomeAbrev,          
+        C.TranspTelefone,                           
+        A.NFPlacaVeiculo,          
+        A.UFId UFPlacaVeiculo,          
+        A.NFQtdVolumes,          
+        H.TpEspDescr,           
+        A.NFMarcaVolume,          
+        A.NFPesoBruto,          
+        A.NFOrdColId,          
+        A.NFOrdColDataSolicitacao,          
+        A.NFOrdColDataHora,          
+        A.NFOrdColRetirouNome,          
+        A.NFOrdColRetirouDocNum,          
+        A.UsuOrdColUltAltId,
+        J.UsuNome,           
+        A.NFOrdColDataHoraUltAlt,
+        B.SrNFNum,  
+        (SELECT SUM(ItemNFCubag) FROM TbItemNotaFIscal X WHERE X.NFId = A.NFId) as Cubagem,                    
+        CASE WHEN A.NFOrdColDataHora IS NULL THEN 'Pendente' ELSE 'Coletado' END NFOrdColStatus
+        FROM TbNotaFiscal A          
+    JOIN TbSerieNotaFiscal B            
+      ON B.SrNFId = A.SrNFId          
+    JOIN TbTransportadora C            
+      ON C.TranspId = A.TranspId          
+    JOIN TbDestinatarioNotaFiscal D            
+      ON D.NFId = A.NFId          
+    JOIN TbenderecoDestinatarioNotaFiscal E            
+      ON E.NFId = A.NFId          
+    JOIN TbtipoenderecoDestinatarioNotaFiscal F            
+      ON F.EndDestNFId = E.EndDestNFId AND F.TpEndDestNFTipo = 'F'          
+    JOIN TbLocalidade G            
+      ON G.LocalId = E.LocalId          
+    LEFT JOIN TbTipoEspecie H            
+      ON H.TpEspId = A.TpEspId   
+    LEFT JOIN TbClienteGrupoEconomico I
+      ON I.CliId = A.CliId    
+    JOIN TbUsuario J
+       ON J.UsuId = A.UsuOrdColUltAltId                  
+ WHERE (LEN(A.NFOrdColId) > 0)           
+          AND (A.NFOrdColId = $NFOrdColId)           
+          AND CONVERT(VarChar, A.NFOrdColDataSolicitacao, 112) >= CONVERT(SmallDateTime, $NFOrdColDataSolicitacaoInicio, 103)         
+          AND CONVERT(VarChar, A.NFOrdColDataSolicitacao, 112) <= CONVERT(SmallDateTime, $NFOrdColDataSolicitacaoFim, 103)         
+          AND CONVERT(VarChar, A.NFOrdColDataHora, 112) >= CONVERT(SmallDateTime, $NFOrdColDataHoraInicio, 103)         
+          AND CONVERT(VarChar, A.NFOrdColDataHora, 112) <= CONVERT(SmallDateTime, $NFOrdColDataHoraFim, 103)         
+          AND (A.TranspId = $TranspId)  
+          AND (A.CliId = $CliId) 
+          AND (I.GpEconId = $GpEconId)                   
+          AND (A.NFStatus > 'C')           
+          AND ($Status = '0'               
+              OR ($Status = '1'       
+                  AND A.NFOrdColDataHora IS NULL)              
+              OR ($Status = '2'       
+                  AND LEN(A.NFOrdColDataHora) > 0))    
+          AND ((LEN($UfIds) = 0 ) OR (CHARINDEX(G.UFId, $UfIds , 0) > 0))

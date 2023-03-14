@@ -1,0 +1,17 @@
+SELECT
+	A.CliId [COD CLIENTE],
+	A.CliNomeRazaoSocial [RAZAO SOCIAL],
+	ISNULL(A.CliCPFCNPJ,'') [CNPJ],
+	ISNULL(B.SegMercDescr,'') [SEGMENTO],
+	ISNULL(C1.GpEconNome,'') [GRUPO]
+FROM
+			TbCliente A
+LEFT JOIN	TbSegmentoMercado B
+			ON B.SegMercId = A.SegMercId
+LEFT JOIN	TbClienteGrupoEconomico C
+			ON C.CliId = A.CliId
+LEFT JOIN	TbGrupoEconomico C1
+			ON C1.GpEconId = C.GpEconId
+
+WHERE
+	A.CliTipoCPFCNPJ = '1'

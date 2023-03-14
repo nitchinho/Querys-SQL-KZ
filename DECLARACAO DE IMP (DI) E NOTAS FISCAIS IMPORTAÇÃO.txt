@@ -1,0 +1,27 @@
+SELECT
+		A.DclrImpEmpresaRefNum [REFERÊNCIA],
+		A.DclrImpDataEmissao [DATA EMISSÃO DI],
+		A.DclrImpNum [NÚMERO DA DI],
+		A.DclrImpValorTotalProdutos [VALOR FOB DI U$],
+		a.DclrImpValorFrete [FRETE U$],
+		C.CotMdValor [COTAÇÃO],
+		B.NFNum [Nº NF],
+		B.NFValorTotal [VALOR TOTAL NF R$]
+
+		
+
+
+
+FROM
+			TbDeclaracaoImportacao A
+JOIN		TbNotaFiscal B
+			ON B.DclrImpId = A.DclrImpId
+JOIN		TbCotacaoMoeda C
+			ON C.CotMdData = A.DclrImpDataCotacaoMoedas
+INNER JOIN		TbDeclaracaoImportacaoPedidoCompra D
+			ON D.DclrImpId = A.DclrImpId
+JOIN		TbPedidoCompra E
+			ON E.PedCpId = D.PedCpId
+
+WHERE B.NFStatus = 'I'
+ORDER BY A.DclrImpId

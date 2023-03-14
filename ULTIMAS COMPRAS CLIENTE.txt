@@ -1,0 +1,7 @@
+SELECT AA.CliId, AA.NFNum, AA.NFDataEmissao, AA.NFValorTotal
+FROM TbNotaFiscal AA
+WHERE AA.NFNum = (SELECT MAX(AA2.NFNum)
+		FROM TbNotaFiscal AA2
+		WHERE AA.CliId = AA2.CliId AND
+			AA.NFDataEmissao = AA2.NFDataEmissao AND
+			AA.NFValorTotal = AA2.NFValorTotal)

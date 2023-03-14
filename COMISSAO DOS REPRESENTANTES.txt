@@ -1,0 +1,47 @@
+﻿select
+		A.ReprId [REPRESENTANTE],
+		A.LancCtReprDocNum [DOCUMENTO],
+		ISNULL(A.LancCtReprDebCred,'D') [TIPO],
+		ISNULL(A.ReprPedVndNFPercComiss/100,0) [%],
+		CASE
+		WHEN (A.LancCtReprDebCred='D') THEN (A.LancCtReprValorComissao)*-1
+		WHEN (A.LancCtReprDebCred='C') THEN (A.LancCtReprValorComissao)*1
+		ELSE 0
+		END [COMISSÃO],		
+		A.LancCtReprValorOutrosDeb [DÉBITOS]
+		
+from TbLancamentoContaRepresentante A
+where
+		A.ReprId = '05' and
+		A.LancCtReprData between '01/11/2019' and '30/11/2019'
+		
+
+ORDER BY A.EmpId, A.LancCtReprData
+
+------------------------------------------------------------------------------------------------------------
+
+/*FINALIZADA*/
+
+select
+		A.ReprId [REPRESENTANTE],
+		B.ReprApelidoNomeAbrev [NOME],
+		
+		
+		SUM((
+		CASE
+				WHEN (A.LancCtReprDebCred='D') THEN (A.LancCtReprValorComissao)*-1
+		WHEN (A.LancCtReprDebCred='C') THEN (A.LancCtReprValorComissao)*1
+		ELSE 0
+		END)-A.LancCtReprValorOutrosDeb) [COMISSÃO]
+		
+		
+from
+		TbLancamentoContaRepresentante A JOIN
+		TbRepresentante B ON B.ReprId = A.ReprId
+
+where
+		A.LancCtReprData between '01/11/2019' and '30/11/2019'
+		
+
+GROUP BY A.ReprId, B.ReprApelidoNomeAbrev
+

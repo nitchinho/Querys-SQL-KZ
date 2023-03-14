@@ -1,0 +1,64 @@
+SET DATEFORMAT DMY
+SELECT
+	
+		CONVERT(VARCHAR(7), B.NFDataEmissao, 111) [DATA EMISSÃO],
+		E.ReprApelidoNomeAbrev [REPRESENTANTE],
+		C.CliId [COD CLIENTE],
+		C.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		ENDER.UFId [UF],
+		J.GpEconNome [GRUPO ECONOMICO],
+		B.NFNum [Nº NOTA],
+		A.ItemNFAliquotaICMS [ICMS],
+		A.PedVndId [PED VENDA],
+		K1.LstPrcDescr [lista],
+		F.ItemEmpresaId [CÓD ITEM],
+		F.ItemDescr [DESCRIÇÃO],
+		A.ItemNFQtd [QUANTIDADE],
+		A.ItemNFValorUnitario [VALOR UNITÁRIO],
+		(A.ItemNFValorUnitario+(A.ItemNFValorIPI/A.ItemNFQtd)) [VALOR UNIT C/IPI],
+		((A.ItemNFValorUnitario * A.ItemNFQtd)+ISNULL(A.ItemNFValorIPI,0)) [VALOR TOTAL]
+
+FROM
+
+
+		TbItemNotaFiscal A
+JOIN		TbItem F ON A.ItemId = F.ItemId
+LEFT JOIN	TbLinhaProduto G ON F.LinProdId = G.LinProdId
+LEFT JOIN	TbFamiliaMaterial H ON F.FamMatId = H.FamMatId
+JOIN		TbNotaFiscal B ON A.NFId = B.NFId
+LEFT JOIN	TbCliente C ON B.CliId = C.CliId
+LEFT JOIN	TbRepresentanteCliente D ON C.CliId = D.CliId
+LEFT JOIN	TbRepresentante E ON D.ReprId = E.ReprId
+LEFT JOIN	TbClienteGrupoEconomico I ON I.CliId = C.CliId
+LEFT JOIN	TbGrupoEconomico J ON J.GpEconId = I.GpEconId
+LEFT JOIN	TbPedidoVenda L ON L.PedVndId = A.PedVndId
+LEFT JOIN	TbListaPreco K1 ON K1.LstPrcId = L.LstPrcId
+
+
+OUTER APPLY
+(
+		SELECT	LOC.UFId
+		FROM	TbEnderecoCliente EC LEFT JOIN
+			TbTipoEnderecoCliente TEC ON TEC.EndCliId = EC.EndCliId LEFT JOIN
+			TbLocalidade LOC ON LOC.LocalId = EC.LocalId
+		WHERE	TEC.CliEndCliTipo = 'F' AND
+			EC.CliId = C.CliId)
+[ENDER]
+
+
+WHERE
+		B.NFDataEmissao BETWEEN '01/01/2015' AND '31/12/2021'
+AND		A.NatOpTipo = 'M'
+AND		B.NFStatus = 'I'
+AND		A.NatOpDescr like ('%VENDA%')
+AND		E.ReprId = 1
+
+
+ORDER BY
+		B.NFDataEmissao,
+		E.ReprId,
+		B.NFNum,
+		C.CliId,
+		A.ItemEmpresaId
+
+

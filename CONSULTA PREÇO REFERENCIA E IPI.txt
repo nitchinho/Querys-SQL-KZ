@@ -1,0 +1,12 @@
+SELECT
+		a.ItemEmpresaId [cod item],
+		a.ItemDescr [descrição],
+		a.ItemPrecoReferencia [preço referencia],
+		b.ClassFisAliquotaIPI/100 [ipi]
+FROM TbItem a left join
+	TbClassificacaoFiscal b on b.ClassFisId = a.ClassFisId
+
+
+lista de estoque
+preço de referencia - 30% + ipi x 2 (arrendonda pra cima - 1 centavo)
+

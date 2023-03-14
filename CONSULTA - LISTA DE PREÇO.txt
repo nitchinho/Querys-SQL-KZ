@@ -1,0 +1,49 @@
+SELECT
+	CASE
+		WHEN (EmpId =3) THEN 'DOCES' ELSE 'BRINQUEDOS'
+	END [D/B],
+	ItemEmpresaId [COD],
+	CASE
+		WHEN (ItemSuspenso = 0) THEN 'S' ELSE 'N'
+	END [DV],
+	ItemDescr [DESCRIÇÃO],
+	NULL [PREVISÃO DE CHEGADA],
+	NULL [PLANO MÍDIA 2019],
+	ISNULL(ItemBarrasId,0) [EAN],
+	TBITEM.ClassFisId [CLASSIFIC. FISCAL],
+	ISNULL(ItemRegDclrImpEmbMaster,0) [MASTER],
+	UniMedAbrev [UV],
+		CASE
+		WHEN (ItemCubagPadrao = 0) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 1) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 2) THEN (ItemQtdCaixasEmbFilha)
+		WHEN (ItemCubagPadrao = 3) THEN (ItemQtdCaixasEmbDisplay)
+		WHEN (ItemCubagPadrao = 4) THEN (1)
+		WHEN (ItemCubagPadrao = 5) THEN (1)
+	END [EMB],
+	ItemCubagPadraoDescr [CUBAGEM PADRÃO],
+		CASE
+		WHEN (ItemCubagPadrao = 0) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 1) THEN (ItemQtdCaixasEmbMaster)
+		WHEN (ItemCubagPadrao = 2) THEN (ItemQtdCaixasEmbFilha)
+		WHEN (ItemCubagPadrao = 3) THEN (ItemQtdCaixasEmbDisplay)
+		WHEN (ItemCubagPadrao = 4) THEN (1)
+		WHEN (ItemCubagPadrao = 5) THEN (1)
+	END [Qtd Min. Venda],
+	ItemPrecoReferencia [VLR. BRUTO (S/ IPI)],
+	ROUND((TbClassificacaoFiscal.ClassFisAliquotaIPI/100),4)[IPI],
+	((ItemPrecoReferencia*(TbClassificacaoFiscal.ClassFisAliquotaIPI/100))+ItemPrecoReferencia) [VLR. BRUTO (C/ IPI)]
+
+FROM
+	TbItem JOIN
+	TbClassificacaoFiscal ON TbClassificacaoFiscal.ClassFisId = TBITEM.ClassFisId
+
+WHERE
+		EmpId IN (2,3)
+AND		ItemAtivo = 1
+AND		ItemExibeConsultasLstPrc = 1
+AND		ItemPrecoReferencia >0
+AND		ItemBarrasId > '0'
+AND		ItemRegDclrImpEmbMaster > '0'
+
+ORDER BY ItemEmpresaId

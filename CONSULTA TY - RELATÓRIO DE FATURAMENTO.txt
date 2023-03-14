@@ -1,0 +1,42 @@
+SET DATEFORMAT DMY
+SELECT
+		CONVERT(VARCHAR(7), B.NFDataEmissao, 111) [DATA EMISSÃO],
+		E.ReprApelidoNomeAbrev [REPRESENTANTE],
+		C.CliId [COD CLIENTE],
+		C.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		J.GpEconNome [GRUPO ECONOMICO],
+		A.ItemEmpresaId [CÓD ITEM],
+		A.ItemNFDescr [DESCRIÇÃO],
+		G.LinProdDescr [LINHA DE PRODUTO],
+		H.FamMatDescr [FAMÍLIA],
+		A.ItemNFQtd [QUANTIDADE],
+		(F.ItemPrecoReferencia/4) [PREÇO U$],
+		(F.ItemPrecoReferencia/4 * A.ItemNFQtd) [VALOR TOTAL]
+
+FROM
+		TbItemNotaFiscal A
+JOIN		TbItem F ON A.ItemId = F.ItemId
+LEFT JOIN	TbLinhaProduto G ON F.LinProdId = G.LinProdId
+LEFT JOIN	TbFamiliaMaterial H ON F.FamMatId = H.FamMatId
+JOIN		TbNotaFiscal B ON A.NFId = B.NFId
+JOIN		TbCliente C ON B.CliId = C.CliId
+JOIN		TbRepresentanteCliente D ON C.CliId = D.CliId
+JOIN		TbRepresentante E ON D.ReprId = E.ReprId
+LEFT JOIN	TbClienteGrupoEconomico I ON I.CliId = C.CliId
+LEFT JOIN	TbGrupoEconomico J ON J.GpEconId = I.GpEconId
+
+WHERE
+		B.NFDataEmissao BETWEEN '01/01/2019' AND '10/06/2019'
+AND		A.NatOpTipo = 'M'
+AND		B.NFStatus = 'I'
+AND		A.NatOpDescr like ('%VENDA%')
+AND G.LinProdId IN (164,165,166,167,168,169,170,171,172,173,174)
+
+ORDER BY
+		B.NFDataEmissao,
+		E.ReprId,
+		B.NFNum,
+		C.CliId,
+		A.ItemEmpresaId
+
+

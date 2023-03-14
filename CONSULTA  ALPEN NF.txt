@@ -1,0 +1,25 @@
+SELECT
+		A.FornecId [COD FORNECEDOR],
+		D.FornecApelidoNomeAbrev [APELIDO FORNECEDOR],
+		A.RecNFNum [Nº NF RECEB.],
+		A.RecNFDataEntrada [DATA ENTRADA],
+		B.ItemEmpresaId [COD ITEM],
+		C.ItemDescr [DESCRIÇÃO],
+		B.ItemRecNFQtd [QTD],
+		B.ItemRecNFValorUnitario [VALOR]
+FROM
+		TbRecebimentoNotaFiscal A
+		JOIN
+		TbItemRecebimentoNotaFiscal B
+		ON B.RecNFId = A.RecNFId
+		LEFT JOIN
+		TbItem C
+		ON C.ItemId = B.ItemId
+		JOIN
+		TbFornecedor D
+		ON D.FornecId = A.FornecId
+
+
+WHERE	A.FornecId in (104,109,112,113,114) AND
+		RecNFStatus = 0
+ORDER BY A.RecNFId

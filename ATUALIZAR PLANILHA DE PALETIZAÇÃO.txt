@@ -1,0 +1,20 @@
+SELECT
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemDescr [DESCRIÇÃO ITEM],
+		A.ItemPesoEmbMaster [PESO-MASTER],
+		A.ItemComprimentoEmbMaster [COMP-MASTER],
+		A.ItemLarguraEmbMaster [LARG-MASTER],
+		A.ItemAlturaEmbMaster [ALT-MASTER],
+		A.ItemPesoEmbFilha [PESO-FILHA],
+		A.ItemComprimentoEmbFilha [COMP-FILHA],
+		A.ItemLarguraEmbFilha [LARG-FILHA],
+		A.ItemAlturaEmbFilha [ALT-FILHA],
+		A.ItemPesoEmbDisplay [PESO-DISPLAY],
+		A.ItemComprimentoEmbDisplay [COMP-DISPLAY],
+		A.ItemLarguraEmbDisplay [LARG-DISPLAY],
+		A.ItemAlturaEmbDisplay [ALT-DISPLAY]
+FROM
+		TbItem A
+
+WHERE
+		A.EmpId IN (2,3)

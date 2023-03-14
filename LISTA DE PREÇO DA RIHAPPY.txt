@@ -1,0 +1,11 @@
+SELECT
+		B.ItemEmpresaId [COD ITEM],
+		B.ItemDescr [DESCRIÇÃO],
+		B.UniMedAbrev [UN],
+		FORMAT(A.ItemLstPrcPrecoVenda,'#.00000') [PREÇO],
+		B.ItemStatus [STATUS]
+FROM
+			TbItemListaPreco A
+LEFT JOIN	TbItem B ON B.ItemId = A.ItemId
+WHERE A.LstPrcId = 47
+ORDER BY A.ItemId

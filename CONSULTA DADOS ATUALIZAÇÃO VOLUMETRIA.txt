@@ -1,0 +1,22 @@
+SELECT
+		ItemEmpresaId,
+		ItemDescr,
+		ItemLarguraEmbMaster,
+		ItemAlturaEmbMaster,
+		ItemComprimentoEmbMaster,
+		ItemLarguraEmbFilha,
+		ItemAlturaEmbFilha,
+		ItemComprimentoEmbFilha,
+		ItemLarguraEmbDisplay,
+		ItemAlturaEmbDisplay,
+		ItemComprimentoEmbDisplay,
+		ItemLarguraEmbPecaComEmb,
+		ItemAlturaEmbPecaComEmb,
+		ItemComprimentoEmbPecaComEmb,
+		ItemLarguraEmbPecaSemEmb,
+		ItemAlturaEmbPecaSemEmb,
+		ItemComprimentoEmbPecaSemEmb
+		
+
+FROM TbItem
+where EmpId in (2,3)

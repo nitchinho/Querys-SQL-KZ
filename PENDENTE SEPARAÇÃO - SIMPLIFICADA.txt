@@ -1,0 +1,18 @@
+﻿SET DATEFORMAT DMY
+select	
+		C1.ReprId [Cód. Representante],
+		F.ItemEmpresaId [Cód.Item],
+		a.ItemPedVndSaldoFaturamento [QTD PENDENTE]
+
+            
+          
+From TbItemPedidoVenda A 
+
+Join TbPedidoVenda B on b.PedVndId = a.PedVndId
+join TbCliente C on C.CliId = B.CliId
+join TbRepresentanteCliente C1 on C1.CliId = C.CliId
+join TbItem F on F.ItemId = a.ItemId
+
+where
+		a.ItemPedVndSaldoFaturamento > 0 and B.PedVndStatus in (6,4)
+AND		CONVERT(Date, b.PedVndData) BETWEEN CONVERT(Date, '01/01/2019') AND CONVERT(Date, '30/05/2019')

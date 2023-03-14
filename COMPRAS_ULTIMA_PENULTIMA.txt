@@ -1,0 +1,51 @@
+SELECT 
+  A.ItemEmpresaId [ITEM],
+  A.ItemDescr [DESCRIÇÃO],
+  R.RecNFDataEmissao [ÚLTIMA COMPRA],
+  S.RecNFDataEmissao [PENÚLTIMA COMPRA],
+  R.ItemRecNFQtdConvertida [QTD CAIXAS],
+  R.RecNFDataEmissao [DATA2]
+  
+
+FROM
+   TbItem A
+OUTER APPLY (
+SELECT TOP(1)
+
+C.RecNFDataEmissao,
+B.ItemEmpresaId,
+B.ItemRecNFQtd,
+B.ItemRecNFQtdConvertida
+FROM
+  TbItemRecebimentoNotaFiscal B
+JOIN TbRecebimentoNotaFiscal C
+  ON C.RecNFId = B.RecNFId
+WHERE
+  B.ItemId = A.ItemId
+AND  C.FornecId = 1
+ORDER BY C.RecNFId DESC
+
+) [R]
+
+OUTER APPLY (
+SELECT TOP(1)
+
+E.RecNFDataEmissao,
+D.ItemEmpresaId,
+D.ItemRecNFQtd,
+D.ItemRecNFQtdConvertida
+FROM
+  TbItemRecebimentoNotaFiscal D
+JOIN TbRecebimentoNotaFiscal E
+  ON E.RecNFId = D.RecNFId
+WHERE
+  D.ItemId = A.ItemId
+AND  E.FornecId = 1
+AND E.RecNFDataEmissao <> R.RecNFDataEmissao
+ORDER BY E.RecNFId DESC
+
+) [S]
+
+WHERE R.ItemRecNFQtd IS NOT NULL
+
+ORDER BY A.ItemEmpresaId

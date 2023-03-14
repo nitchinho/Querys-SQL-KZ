@@ -1,0 +1,52 @@
+SELECT
+	A.ItemEmpresaId [COD],
+	
+	CASE
+		WHEN (A.ItemSuspenso = 1) THEN 'N'
+		WHEN (A.ItemSuspenso = 0) THEN 'S'
+		END [DV],
+
+	A.ItemDescr [DESCRIÇÃO],
+	NULL [PREVISÃO DE CHEGADA],
+	ISNULL(ItemBarrasTributavelId,0) [EAN],
+	A.ClassFisId [CLASSIFIC. FISCAL],
+	ISNULL(ItemRegDclrImpEmbMaster,0) [MASTER],
+	UniMedAbrev [UV],
+	ItemQtdCaixasEmbMaster [EMB],
+	('1 CX') [QTDE. MÍN. VDA.],
+	ItemPrecoReferencia [VLR. BRUTO (S/ IPI)],
+		
+		CASE
+		WHEN (A.ItemOrigem = 'N') THEN (0)
+		ELSE ROUND((B.ClassFisAliquotaIPI/100),6) END [IPI],
+		
+		CASE
+		WHEN (A.ItemOrigem = 'N') THEN (ItemPrecoReferencia)
+		ELSE ((ItemPrecoReferencia*(B.ClassFisAliquotaIPI/100))+ItemPrecoReferencia)
+		END [VLR. BRUTO (C/ IPI)]
+		
+
+FROM
+	TbItem A LEFT JOIN
+	TbClassificacaoFiscal B ON B.ClassFisId = A.ClassFisId
+	
+	OUTER APPLY
+	(select AA.ItemEmpresaId, SUM(BB.SaldoFisicoDisponivel) [QTD]
+from
+			TbItem AA
+LEFT JOIN	VwSaldoDepositoItem BB
+			ON AA.ItemId = BB.ItemId
+WHERE
+		AA.ItemEmpresaId = A.ItemEmpresaId
+AND BB.DepId IN (2,3,4,191)
+GROUP BY AA.ItemEmpresaId) as TbEstoque
+
+WHERE
+		EmpId IN (2,3)
+AND		ItemAtivo = 1
+AND		ItemExibeConsultasLstPrc = 1
+AND		ItemPrecoReferencia >0
+AND		ItemBarrasId > '0'
+
+
+ORDER BY A.ItemEmpresaId

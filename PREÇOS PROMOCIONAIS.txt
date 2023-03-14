@@ -1,0 +1,24 @@
+SELECT A1.ItemEmpresaId,
+a1.ItemDescr,
+a.ItemVndPrmPreco,
+CASE
+		WHEN (A1.ItemOrigem = 'N') THEN (0)
+		ELSE ROUND((C.ClassFisAliquotaIPI/100),4) END [IPI],
+
+		CASE
+		WHEN (A1.ItemOrigem = 'N') THEN (A.ItemVndPrmPreco)
+		ELSE ((A.ItemVndPrmPreco*(C.ClassFisAliquotaIPI/100))+A.ItemVndPrmPreco)
+		END [VLR. BRUTO (C/ IPI)]
+
+
+FROM
+			TbItemVendaPromocional A
+LEFT JOIN	TbItem A1
+			ON A1.ItemId = A.ItemId
+LEFT JOIN	TbClassificacaoFiscal C
+			ON C.ClassFisId = A1.ClassFisId
+WHERE
+		A1.EmpId = 5
+
+ORDER BY
+		A1.ItemEmpresaId

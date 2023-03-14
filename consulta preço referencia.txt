@@ -1,0 +1,17 @@
+SELECT
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemQtdCaixasEmbMaster [QTD P/ CAIXA],
+		A.ItemDescr [DESCRIÇÃO],
+		A.ItemPrecoReferencia [PREÇO REFERÊNCIA S/ IPI],
+		B.ClassFisAliquotaIPI/100 [ALÍQUOTA IPI %],
+		A.ItemPrecoReferencia+(A.ItemPrecoReferencia*(B.ClassFisAliquotaIPI/100))[PREÇO C/ IPI],
+		A.ItemStatus [STATUS]
+
+		
+FROM
+			TbItem A
+LEFT JOIN	TbClassificacaoFiscal B
+			ON A.ClassFisId = B.ClassFisId
+WHERE
+		EmpId IN (2)
+ORDER BY A.ItemEmpresaId

@@ -1,0 +1,79 @@
+﻿SET DATEFORMAT DMY  SET DATEFORMAT DMY  
+SELECT 
+		E.EmpNomeAbrev [Empresa],
+		AC.Cliid [Cód.Cliente],
+		AC.CliNomeRazaoSocial [Razão Social],
+		YB.ufid [UF],
+		TG.GpEconId [Cód. GP Econômico],
+		TG.GpEconNome [GP Econômico],
+		C1.ReprApelidoNomeAbrev [Representante],
+		CONVERT(VARCHAR(7), D.NFDataEmissao, 111) [Ano/Mês Emissão],
+		A.ItemEmpresaId [Item],
+		A.ItemNFDescr [Descrição],
+		A.UniMedAbrev [UN],
+		AB.FamMatDescr [Família],
+		ISNULL(SUM(A.ItemNFQtd),0) [Quantidade],
+		SUM(yy.[Valor Total]) [Valor Total],
+		ISNULL(SUM(yy.[Valor Total]),0) / SUM(Case WHEN A.ItemNFQtd = 0 then 1 else A.ItemNFQtd end) [Valor Médio Item],
+		ISNULL(SUM(A.ItemNFValorIPI),0) [Total IPI],
+		ISNULL(SUM(A.ItemNFValorICMSSubstituicaoTributaria),0) [Total ST],
+		SUM(A.ItemNFValorAbat) [Total Valor Abatimento],
+		ISNULL(SUM(F.DevItemRecNFQtd),0) [Qtd. Devolvida],
+		ISNULL(SUM(F.DevItemRecNFValorTotal),0) [Valor Devolvido]    
+	  
+FROM 
+		TbItemNotaFiscal A         
+		JOIN TbItem B           ON B.ItemId = A.ItemId         
+		JOIN TbItemRepresentantePedidoVendaNotaFiscal C             
+		JOIN TbRepresentante C1               ON C1.ReprId = C.ReprId           ON C.ItemNFId = A.ItemNFId         
+		JOIN TbNotaFiscal D           ON D.NFId = A.NFId         
+		JOIN TbEmpresa E           ON E.EmpId = D.EmpId         
+		JOIN TbEnderecoDestinatarioNotaFiscal YA           ON YA.NFId = D.NFId         
+		JOIN TbLocalidade YB           ON YB.LocalId = YA.LocalId           
+		JOIN TbTipoEnderecoDestinatarioNotaFiscal YC           ON YC.EndDestNFId = YA.EndDestNFId
+		LEFT OUTER join TbLinhaProduto LM on LM.LinProdId = B.LinProdid                    OUTER APPLY         
+		
+(SELECT SUM(F3.DevItemRecNFQtd) DevItemRecNFQtd, CONVERT(DECIMAL(18,2),	SUM(ROUND((F1.ItemRecNFValorTotal / ISNULL(F1.ItemRecNFQtd, 1)) * F3.DevItemRecNFQtd, 2))) DevItemRecNFValorTotal		
+		FROM TbItemRecebimentoNotaFiscal F1                    
+		JOIN TbRecebimentoNotaFiscal F2                      ON F2.RecNFId = F1.RecNFId                    
+		JOIN TbDevolucaoItemRecebimentoNotaFiscal F3                      ON F3.ItemRecNFId = F1.ItemRecNFId                         
+		AND F3.ItemNFId = A.ItemNFId              
+		WHERE F1.NatOpTipo = 'D'                    
+		AND CONVERT(VARCHAR(7), F2.RecNFDataEntrada, 111) = CONVERT(VARCHAR(7), D.NFDataEmissao, 111)         ) F      CROSS APPLY 
+		
+		(Select	CASE WHEN xy.LstPrcId = 41 Then (A.ItemNFValorTotal*2)		When xy.LstPrcId = 36 Then (A.ItemNFValorTotal*2)	ELSE A.ItemNFValorTotal
+		END [Valor Total]                      
+		From TbPedidoVenda XX                     
+		JOIN TbListaPreco XY                         ON XY.LstPrcId = XX.LstPrcId
+		Where XX.PedVndId = A.PedVndId) YY           
+		
+		JOIN TbFamiliaMaterial AB           ON AB.FamMatId = B.FamMatId         JOIN TbCliente AC           ON AC.CliId = D.CliId         
+		LEFT OUTER join TbClienteGrupoEconomico GE  on GE.CliId = D.cliid         
+		LEFT OUTER join TbGrupoEconomico TG on GE.GpEconId = TG.GpEconId       
+		
+WHERE D.NFStatus IN('I', 'D')         
+		AND YC.TpEndDestNFTipo = 'F'         
+		AND A.NatOpId IN (51020,51021,54030,54031,51024,61020,61021,61024, 61025, 61026, 61027, 61023, 61100, 64033)
+		AND D.NFDataEmissao BETWEEN '01/01/2018' AND '28/11/2018'
+		AND B.LinProdid > 0
+		AND TG.GpEconId IN (87,573,1053)
+		
+GROUP BY E.EmpNomeAbrev,
+	C1.ReprApelidoNomeAbrev,
+	CONVERT(VARCHAR(7),
+	D.NFDataEmissao, 111),
+	A.ItemEmpresaId,
+	A.ItemNFDescr,
+	A.UniMedAbrev,
+	AC.Cliid,
+	AC.CliNomeRazaoSocial,
+	TG.GpEconId,
+	TG.GpEconNome,
+	AB.FamMatDescr,
+	A.ItemNFQtd, yy.[Valor Total],
+	A.ItemNFValorIPI,
+	A.ItemNFValorICMSSubstituicaoTributaria,
+	A.ItemNFValorAbat,
+	F.DevItemRecNFQtd,
+	F.DevItemRecNFValorTotal,
+	YB.ufid  

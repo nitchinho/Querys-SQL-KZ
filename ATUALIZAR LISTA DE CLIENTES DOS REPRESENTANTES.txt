@@ -1,0 +1,57 @@
+SELECT
+	A.CliId [COD CLIENTE],
+	ISNULL(A.CliCPFCNPJ,0) [CNPJ],
+	A.CliRGInscrEstadual [INSC. ESTADUAL],
+	A.CliNomeRazaoSocial [RAZÃO SOCIAL],
+	CONCAT(A.CliTelefoneDDDId,A.CliTelefoneNum) [TELEFONE],
+	H.DescPercentualPrecoUnitario [DESCONTO],
+	A.CliEMail [EMAIL COMERCIAL],
+	A.CliEMailFiscal [EMAIL FISCAL],
+	CONCAT(C.TpLogrAbrev, ' ',C.EndCliLogradouro,', ',C.EndCliNumero,' ',C.EndCliComplemento) [ENDEREÇO],
+	C.EndCliBairro [BAIRRO],
+	CA.LocalNome [CIDADE],
+	D.UFId [UF],
+	C.CEPNum [CEP],
+	E.ContCliNome [NOME CONTATO],
+	F.CondPagDescr [COND. DE PAGTO],
+	CONCAT(G.TranspId,' - ', G.TranspApelidoNomeAbrev) [TRANSPORTADORA],
+	B.ReprId [REPRESENTANTE],
+	A.CliId [COD CLIENTE 2],
+	ISNULL (CAST(1-LP.LstPrcFatorMarkup AS VARCHAR (10)),0) [LISTA]
+	
+
+FROM
+			TbCliente A
+LEFT JOIN	TbRepresentanteCliente B
+			ON A.CliId = B.CliId
+LEFT JOIN	TbEnderecoCliente C
+			ON C.CliId = A.CliId
+LEFT JOIN	TbLocalidade CA
+			ON CA.LocalId = C.LocalId
+LEFT JOIN	TbUF D
+			ON D.UFId = CA.UFId
+LEFT JOIN	TbTipoEnderecoCliente CB
+			ON CB.EndCliId = C.EndCliId
+LEFT JOIN	TbCondicaoPagamento F
+			ON F.CondPagId = A.CondPagId
+LEFT JOIN	TbTransportadora G
+			ON G.TranspId = A.TranspId
+OUTER APPLY
+			(	SELECT F1.CliId, F1.ContCliNome
+				FROM TbContatoCliente F1
+				WHERE F1.ContCliPrincipal = 1 AND
+				A.CliId = F1.CliId) [E]
+LEFT JOIN	TbDesconto H
+			ON H.DescId = A.DescId
+LEFT JOIN	TbListaPrecoCliente LPC
+			ON LPC.CliId = A.CliId
+LEFT JOIN	TbListaPreco LP
+			ON LP.LstPrcId = LPC.LstPrcId
+		
+
+WHERE
+	A.CliTipoCPFCNPJ = '1' AND
+	CB.CliEndCliTipo = 'F' AND
+	A.CliAtivo = 1
+
+ORDER BY B.ReprId, A.CliId

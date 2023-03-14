@@ -1,0 +1,45 @@
+SET DATEFORMAT DMY							
+SELECT							
+		CASE					
+		WHEN (B.EmpId = 2) THEN  'BRINQUEDOS'					
+		WHEN (B.EmpId = 3) THEN  'DOCES'					
+		WHEN (B.EmpId = 4) THEN  'DEPÓSITO'					
+		WHEN (B.EmpId = 5) THEN  'TEN LANDY'					
+		END [EMPRESA],					
+							
+		E.ReprApelidoNomeAbrev [REPRESENTANTE],					
+		c.CliId [cod cliente],
+		C.CliNomeRazaoSocial [RAZÃO SOCIAL],					
+		J.GpEconNome [GRUPO ECONOMICO],					
+		K.SegMercDescr [SEGMENTO],					
+		sum(A.ItemNFValorUnitario * A.ItemNFQtd) [VALOR TOTAL]					
+							
+FROM							
+		TbItemNotaFiscal A					
+JOIN		TbItem F ON A.ItemId = F.ItemId					
+LEFT JOIN	TbLinhaProduto G ON F.LinProdId = G.LinProdId						
+LEFT JOIN	TbFamiliaMaterial H ON F.FamMatId = H.FamMatId						
+JOIN		TbNotaFiscal B ON A.NFId = B.NFId					
+JOIN		TbCliente C ON B.CliId = C.CliId					
+JOIN		TbRepresentanteCliente D ON C.CliId = D.CliId					
+JOIN		TbRepresentante E ON D.ReprId = E.ReprId					
+LEFT JOIN	TbClienteGrupoEconomico I ON I.CliId = C.CliId						
+LEFT JOIN	TbGrupoEconomico J ON J.GpEconId = I.GpEconId						
+LEFT JOIN	TbSegmentoMercado K ON K.SegMercId = C.SegMercId						
+							
+WHERE							
+		B.NFDataEmissao BETWEEN '01/01/2019' AND '31/12/2019'					
+AND		A.NatOpTipo = 'M'					
+AND		B.NFStatus = 'I'					
+AND		A.NatOpDescr like ('%VENDA%')					
+							
+							
+group BY							
+							
+		C.CliId,					
+		C.CliNomeRazaoSocial,					
+		B.EmpId,					
+		E.ReprId,					
+		E.ReprApelidoNomeAbrev,					
+		J.GpEconNome,					
+		K.SegMercDescr					

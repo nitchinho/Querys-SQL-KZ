@@ -1,0 +1,51 @@
+SET DATEFORMAT DMY
+SELECT
+		a.PedVndDataHoraIncl [DATA],
+		A.CliId [COD CLIENTE],
+		F.CliApelidoNomeAbrev [APELIDO],
+		F.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		
+		D.ItemEmpresaId [ITEM],
+		B.ItemPedVndDescr [DESCR],
+		D.UniMedAbrev [UN],
+       (CASE
+         WHEN (B.MotCancId IS NULL AND A.PedVndStatus <> 1) THEN IsNull(C.ItemPedVndEntSaldoFaturamento, 0)
+         ELSE 0
+       END) [SALDO FATURAR PEND],
+		B.ItemPedVndPrecoUnitarioFinal [PREÇO UNIT.],
+		(B.ItemPedVndPrecoUnitarioFinal*(CASE
+         WHEN (B.MotCancId IS NULL AND A.PedVndStatus <> 1) THEN IsNull(C.ItemPedVndEntSaldoFaturamento, 0)
+         ELSE 0
+       END))[TOTAL]
+  FROM TbPedidoVenda A
+       JOIN TbItemPedidoVenda B
+         ON A.PedVndId = B.PedVndId
+       JOIN TbItemPedidoVendaEntrega C
+         ON B.ItemPedVndId = C.ItemPedVndId
+       JOIN TbItem D 
+         ON B.ItemId = D.ItemId
+       LEFT OUTER JOIN TbItemCliente E
+         ON A.CliId = E.CliId
+            AND B.ItemId = E.ItemId
+       JOIN TbCliente F
+         ON A.CliId = F.CliId
+       JOIN TbPrioridadePedidoVenda G
+         ON A.PriorPedVndId= G.PriorPedVndId
+      OUTER APPLY
+      (
+         SELECT MAX(Z.NFDataEmissao) NFDataEmissao
+           FROM TbNotaFiscal Z 
+                JOIN TbItemNotaFiscal Y 
+                  ON Z.NFId = Y.NFId
+          WHERE Y.ItemPedVndEntId = C.ItemPedVndEntId
+                AND Z.NFTipo = 6
+                AND Z.NFStatus IN ('G', 'I')
+      ) H
+ WHERE 
+		((B.MotCancId IS NULL AND A.PedVndStatus <> 1) OR B.ItemPedVndQtdFaturada > 0)
+AND		CASE WHEN (B.MotCancId IS NULL AND A.PedVndStatus <> 1) THEN IsNull(C.ItemPedVndEntSaldoFaturamento, 0) ELSE 0 END > 0
+AND		A.PedVndStatus IN (4,6)
+AND		A.PedVndData BETWEEN '01/01/2020' and '31/12/2022'
+
+ 
+ ORDER BY A.CliId, D.ItemEmpresaId

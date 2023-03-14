@@ -1,0 +1,17 @@
+SELECT
+		B.NFNum [Nº DA NF],
+		B.NFDataEmissao [DATA EMISSÃO NF],
+		B.CliId [CÓD CLIENTE],
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemNFDescr [DESCRIÇÃO],
+		A.ItemNFQtd [QTD NA NF]
+		
+				
+		
+		
+FROM
+		TbItemNotaFiscal A JOIN
+		TbNotaFiscal B ON A.NFId = B.NFId
+
+WHERE	ItemEmpresaId = '4952'
+AND		PedVndId > '0'

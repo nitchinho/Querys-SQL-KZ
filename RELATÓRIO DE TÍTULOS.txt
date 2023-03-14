@@ -1,0 +1,46 @@
+SET DATEFORMAT DMY
+SELECT
+		H.EmpNomeAbrev [EMPRESA],
+		C.ReprId [REPRESENTANTE],
+		CONCAT(B.DocNum,' - ',A.TitNumCompleto) [TÍTULO],		 
+		B.CliId [COD CLIENTE],
+		D.CliNomeRazaoSocial [RAZÃO SOCIAL],
+		D.CliCPFCNPJ [CNPJ],
+		ISNULL(E1.GpEconId,B.CliId) [COD GRUPO (se nulo, cod cliente)],
+		ISNULL(E1.GpEconNome,D.CliNomeRazaoSocial) [GRUPO ECONOMICO],
+		CONCAT(B.DocId,' - ', B.DocDescr)[HISTORICO],
+		ISNULL(F.CxDescr,CONCAT(G1.BncNome,' ',G.CCNumAgencia,' ',G.CCNum,'-',G.CCDig))[CONTA],
+		B.DocData [DATA EMISSÃO],
+		A.TitDataVencimento [DATA VENCIMENTO],
+		(A.TitValor-A.TitValorDesc) [VALOR]
+		
+
+FROM
+			TbTitulo A
+LEFT JOIN	TbDocumento B
+			ON A.DocId = B.DocId
+LEFT JOIN	TbRepresentanteCliente C
+			ON C.CliId = B.CliId
+LEFT JOIN	TbCliente D
+			ON D.CliId = C.CliId
+LEFT JOIN	TbClienteGrupoEconomico E
+			ON E.CliId = D.CliId
+LEFT JOIN	TbGrupoEconomico E1
+			ON E1.GpEconId = E.GpEconId
+LEFT JOIN	TbCaixa F
+			ON F.CxId = A.CxId
+LEFT JOIN	TbContaCorrente G
+			ON G.CCId = A.CCId
+LEFT JOIN	TbBanco G1
+			ON G1.BncId = G.BncId
+LEFT JOIN	TbEmpresa H
+			ON H.EmpId = A.EmpId
+LEFT JOIN	TbNotaFiscal I
+			ON I.NFId = B.NFId
+
+
+
+WHERE
+		
+		TitDataVencimento between '01/07/2020' and '31/07/2020'
+AND		TitStatus = 'A'

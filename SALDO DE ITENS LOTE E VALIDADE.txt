@@ -1,0 +1,17 @@
+select
+		C.ItemEmpresaId [COD ITEM],
+		C.ItemDescr [DESCRIÇÃO],
+		B.LtItemDataValidade [DATA VALIDADE],
+		B.LtItemExternoNum [LOTE EXTERNO],
+		A.SaldoFisicoDisponivel [SALDO DISPONÍVEL]
+
+from
+			VwSaldoDisponivelLoteItem A
+LEFT JOIN	TbLoteItem B
+			ON B.LtItemId = A.LtItemId
+LEFT JOIN	TbItem C
+			ON C.ItemId = B.ItemId
+
+WHERE A.SaldoFisicoDisponivel > 0
+
+ORDER BY C.ItemEmpresaId, B.LtItemDataValidade

@@ -1,0 +1,24 @@
+SELECT
+		B.PedCpFornecedorId [COD PEDIDO],
+		D.ItemPedCpEntDataPrevista [DATA PREVISTA ENTREGA],
+		B.PedCpId [COD DBCORP],
+		C.ItemEmpresaId [COD ITEM],
+		C.ItemDescr [DESCRIÇÃO],
+		CONVERT (numeric,A.ItemPedCpQtd) [QTD PEDIDO],
+		CONVERT (numeric,A.ItemPedCpQtd / C.ItemQtdCaixasEmbMaster) [QTD CAIXAS],
+		CONVERT (smallmoney,A.ItemPedCpPrecoUnitario,126) [U$ UNITÁRIO],
+		CONVERT (smallmoney,(A.ItemPedCpQtd*A.ItemPedCpPrecoUnitario),2) [TOTAL],
+		C.ItemPrecoReferencia [TABELA PADRÃO]
+		
+FROM
+			TbItemPedidoCompra A
+LEFT JOIN	TbPedidoCompra B
+			ON B.PedCpId = A.PedCpId
+LEFT JOIN	TbItem C
+			ON C.ItemId = A.ItemId
+LEFT JOIN	TbItemPedidoCompraEntrega D
+			ON D.ItemPedCpId = A.ItemPedCpId
+
+WHERE
+		B.PedCpStatus = 3
+ORDER BY B.PedCpFornecedorId

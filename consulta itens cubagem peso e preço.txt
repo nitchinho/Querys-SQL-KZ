@@ -1,0 +1,30 @@
+SELECT
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemBarrasId [COD EAN],
+		A.ItemDescr [DESCRIÇÃO],
+		A.ItemBarrasEmbDisplayId [COD BARRAS DISPLAY],
+		A.ItemBarrasEmbFilhaId  [COD BARRAS FILHA],
+		A.ItemBarrasEmbMasterId [COD BARRAS MASTER],
+		A.ItemQtdCaixasEmbDisplay [QTD DISPLAY],
+		A.ItemQtdCaixasEmbFilha [QTD FILHA],
+		A.ItemQtdCaixasEmbMaster [QTD MASTER],
+		A.ItemPesoEmbPecaComEmb [PESO C/ EMBALAGEM],
+		A.ItemComprimentoEmbPecaComEmb [COMPRIMENTO C/ EMBALAGEM],
+		A.ItemLarguraEmbPecaComEmb [LARGURA C/ EMBALAGEM],
+		A.ItemAlturaEmbPecaComEmb [ALTURA C/ EMBALAGEM],
+		A.ItemPesoEmbDisplay [PESO DISPLAY],
+		A.ItemComprimentoEmbDisplay [COMPRIMENTO DISPLAY],
+		A.ItemLarguraEmbDisplay [LARGURA DISPLAY],
+		A.ItemAlturaEmbDisplay [ALTURA DISPLAY],
+		A.ItemPesoEmbMaster [PESO MASTER CARTON],
+		A.ItemComprimentoEmbMaster [COMPRIMENTO MASTER CARTON],
+		A.ItemLarguraEmbMaster [LARGURA MASTER CARTON],
+		A.ItemAlturaEmbMaster [ALTURA MASTER CARTON],
+		A.ItemPrecoReferencia [PREÇO REFERÊNCIA],
+		A.ItemStatus [STATUS]
+
+		
+FROM
+		TbItem A
+WHERE
+		EmpId IN (2,3)

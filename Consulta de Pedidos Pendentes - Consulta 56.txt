@@ -1,0 +1,34 @@
+SET DATEFORMAT DMY       
+select
+       B.PedVndId [Pedido],
+       B.PedVndData [Data Pedido],
+       B.PedVndStatusDescr [Status],
+       B.CliId [Cód.Cliente],
+       C.CliNomeRazaoSocial [Razão Social],
+       C1.ReprId [Cód. Representante],
+       E.GpEconId [Cód. GP. Econômico],
+       E.GpEconNome [GP. Econômico],
+       F.ItemEmpresaId [Cód.Item],
+       F.ItemDescr [Item],
+       A.ItemPedVndSaldoFaturamento [QTD],
+       B.PedVndClienteId [Nº Referência],
+       (A.ItemPedVndPrecoUnitario * A.ItemPedVndSaldoFaturamento) [Valor Total], 
+       A.ItemPedVndPrecoUnitario [Preço Unitário],
+       A.ItemPedVndPrecoUnitarioFinal [Preço Unitário Final]       
+
+From
+       TbItemPedidoVenda A JOIN
+       TbPedidoVenda B on B.PedVndId = A.PedVndId JOIN
+       TbCliente C on C.CliId = B.CliId JOIN
+       TbRepresentanteCliente C1 on C1.CliId = C.CliId LEFT OUTER JOIN
+       TbClienteGrupoEconomico D  on D.CliId = C.cliid LEFT OUTER JOIN
+       TbGrupoEconomico E on E.GpEconId = D.GpEconId JOIN
+       TbItem F on F.ItemId = A.ItemId       
+
+WHERE       
+       A.ItemPedVndSaldoFaturamento > 0 AND
+       B.PedVndStatus in (6,4) AND
+       B.PedVndData BETWEEN '01/01/2019' AND '01/05/2019' AND
+       B.CliId = "CODIGO DO CLIENTE" AND
+       GpEconId = "GRUPO ECONÔMICO" AND
+       F.ItemEmpresaId IN ('5113','5114','5037')

@@ -1,0 +1,17 @@
+SELECT 
+		A.ItemId [ITEM DBCORP],
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemDescr [DESCRIÇÃO],
+		C.FamMatDescr [FAMILIA MATERIAL],
+		B.LinProdId [CÓD LINHA PRODUTO],
+		B.LinProdDescr [LINHA DE PRODUTO]
+		
+
+FROM
+		TbItem			A LEFT JOIN
+		TbLinhaProduto		B ON A.LinProdId = B.LinProdId	LEFT JOIN
+		TbFamiliaMaterial	C ON A.FamMatId = C.FamMatId
+WHERE
+		A.EmpId IN (2)
+AND		A.ItemAtivo = 1
+AND		A.ItemSuspenso = 1

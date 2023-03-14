@@ -1,0 +1,32 @@
+SELECT
+		B.NFDataEmissao,
+		A.ItemEmpresaId,
+		C.ItemDescr,
+		D.CliId,
+		D.CliNomeRazaoSocial,
+		D.CliApelidoNomeAbrev,
+		CONCAT(E.TpLogrAbrev,' ',E.EndCliLogradouro,', ',E.EndCliNumero)ENDERELO,
+		F.LocalNome,
+		F.UFId
+FROM
+			TbItemNotaFiscal A
+LEFT JOIN	TbNotaFiscal B
+			ON B.NFId = A.NFId
+LEFT JOIN	TbItem C
+			ON C.ItemId = A.ItemId
+LEFT JOIN	TbCliente D
+			ON D.CliId = B.CliId
+LEFT JOIN	TbEnderecoCliente E
+			ON E.CliId = D.CliId
+LEFT JOIN	TbLocalidade F
+			ON F.LocalId = E.LocalId
+LEFT JOIN	TbTipoEnderecoCliente G
+			ON G.EndCliId = E.EndCliId
+
+WHERE
+			C.ItemEmpresaId = '3718'
+AND			F.LocalNome LIKE '% SÃO JOSÉ %'
+AND			G.CliEndCliTipo = 'E'
+
+order by (B.NFDataEmissao)desc
+

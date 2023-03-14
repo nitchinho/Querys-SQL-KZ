@@ -1,0 +1,22 @@
+SELECT
+		A.NFNum [Nº NF],
+		A.NFDataEmissao [DATA EMISSÃO],
+		D.CliId [CLIENTE],
+		D.CliApelidoNomeAbrev [NOME CLIENTE],
+		B.ItemEmpresaId [COD ITEM],
+		C.ItemDescr [DESCRIÇÃO],
+		B.ItemNFQtd [QTDADE],
+		B.ItemNFValorUnitario [R$ UNIT],
+		B.ItemNFValorTotal [R$ TOTAL]
+FROM
+			TbNotaFiscal A
+LEFT JOIN	TbItemNotaFiscal B
+			ON B.NFId = A.NFId
+LEFT JOIN	TbItem C
+			ON C.ItemId = B.ItemId
+LEFT JOIN	TbCliente D
+			ON D.CliId = A.CliId
+WHERE
+		B.ItemEmpresaId IN ('003528','0035441')
+AND		A.NFStatus = 'I'
+ORDER BY A.NFNum

@@ -1,0 +1,20 @@
+SELECT
+		A.ItemEmpresaId [COD ITEM],
+		A.ItemDescr [DESCRIÇÃO],
+		A.ItemBarrasTributavelId [COD BARRAS EAN],
+		A.ClassFisId [CLASSIF. FISCAL],
+		A.ItemQtdCaixasEmbMaster [QTD P/ CAIXA MASTER],
+		A.UniMedAbrev [UV],
+		A.ItemPrecoReferencia [PREÇO REFERÊNCIA S/ IPI],
+		B.ClassFisAliquotaIPI [ALÍQUOTA IPI %],
+		A.ItemPrecoReferencia+(A.ItemPrecoReferencia*(B.ClassFisAliquotaIPI/100))[PREÇO C/ IPI],
+		A.ItemStatus [STATUS]
+
+		
+FROM
+			TbItem A
+LEFT JOIN	TbClassificacaoFiscal B
+			ON A.ClassFisId = B.ClassFisId
+WHERE
+		EmpId IN (2)
+ORDER BY A.ItemEmpresaId

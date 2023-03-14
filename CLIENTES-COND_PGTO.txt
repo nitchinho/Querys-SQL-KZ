@@ -1,0 +1,25 @@
+SELECT
+		A.CliId [COD CLIENTE],
+		A.CliNomeRazaoSocial [RAZAO SOCIAL],
+		ISNULL(A.CliApelidoNomeAbrev,'')[APELIDO CLIENTE],
+		D1.UFId [UF],
+		ISNULL(B1.ReprApelidoNomeAbrev,'')[REPRESENTANTE],
+		ISNULL(C.CondPagDescr,'')[COND. PAGTO]
+FROM
+			TbCliente A
+LEFT JOIN	TbRepresentanteCliente B
+			ON B.CliId = A.CliId
+LEFT JOIN	TbRepresentante B1
+			ON B1.ReprId = B.ReprId
+LEFT JOIN	TbCondicaoPagamento C
+			ON C.CondPagId = A.CondPagId
+LEFT JOIN	TbEnderecoCliente D
+			ON D.CliId = A.CliId
+LEFT JOIN	TbLocalidade D1
+			ON D.LocalId = D1.LocalId
+LEFT JOIN	TbTipoEnderecoCliente D2
+			ON D2.EndCliId = D.EndCliId
+			
+WHERE D2.CliEndCliTipo = 'F'
+ORDER BY A.CliId
+

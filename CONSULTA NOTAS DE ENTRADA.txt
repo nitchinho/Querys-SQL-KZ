@@ -1,0 +1,21 @@
+SELECT
+		A.NFDataEmissao [DATA EMISSÃO],
+		A.NFValorTotal [VALOR TOTAL],
+		CASE
+		WHEN (A.EmpId = 2) THEN  'DTC'
+		WHEN (A.EmpId = 3) THEN  'DOCES'
+		WHEN (A.EmpId = 4) THEN  'DEPÓSITO'
+		WHEN (A.EmpId = 5) THEN  'TEN LANDY'
+		END [EMPRESA],
+		A.NFObservacao [D'IS],
+		A.NFNum [Nº NF-E],
+		NULL [OK]
+
+
+FROM
+	TbNotaFiscal A LEFT JOIN
+	TbFornecedor B ON A.FornecId = B.FornecId
+
+WHERE
+		B.FornecId = 1
+AND		A.NFDataEmissao BETWEEN '01/01/2017' AND '31/12/2018'

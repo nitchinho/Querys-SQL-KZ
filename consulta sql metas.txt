@@ -1,0 +1,32 @@
+SET DATEFORMAT DMY
+SELECT
+	C1.ReprApelidoNomeAbrev [Representante],
+	CONVERT(VARCHAR(7), D.NFDataEmissao, 111) [Ano/Mês],
+	A.ItemEmpresaId [Item],
+	SUM(A.ItemNFQtd) [Quantidade],
+	SUM(A.ItemNFValorTotal-A.ItemNFValorAbat) [Valor Total],
+	G.FamMatDescr [FAMILIA]
+
+FROM
+	TbItemNotaFiscal				A       				JOIN
+	TbItem						B	ON B.ItemId = A.ItemId		JOIN
+	TbFamiliaMaterial				G	ON G.FamMatId = B.FamMatId	JOIN
+	TbItemRepresentantePedidoVendaNotaFiscal	C					JOIN
+	TbRepresentante					C1	ON C1.ReprId = C.ReprId
+								ON C.ItemNFId = A.ItemNFId	JOIN
+	TbNotaFiscal					D	ON D.NFId = A.NFId		JOIN
+	TbEmpresa					E	ON E.EmpId = D.EmpId
+
+WHERE
+	D.NFStatus = 'I'
+AND	C.ReprId >= '5'
+AND	A.NatOpTipo = 'M'
+AND	CONVERT(Date, D.NFDataEmissao) BETWEEN CONVERT(Date, '01/01/2016')
+AND	CONVERT(Date, '29/10/2018')
+AND	C1.reprativo = 1
+
+GROUP BY
+	C1.ReprApelidoNomeAbrev,
+	CONVERT(VARCHAR(7),D.NFDataEmissao, 111),
+	A.ItemEmpresaId,
+	G.FamMatDescr

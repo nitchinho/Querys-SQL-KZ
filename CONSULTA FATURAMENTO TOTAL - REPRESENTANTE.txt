@@ -1,0 +1,30 @@
+SET DATEFORMAT DMY
+SELECT
+		
+		
+		E.ReprApelidoNomeAbrev [REPRESENTANTE],
+		CONVERT(VARCHAR(7), B.NFDataEmissao, 111) [DATA EMISSÃO],
+		SUM(A.[nfvalor total])[VALOR]
+		
+
+FROM
+		TbNotaFiscal B JOIN
+		TbRepresentanteCliente D ON D.CliId = B.CliId LEFT JOIN
+		TbRepresentante E ON E.ReprId = D.ReprId
+		OUTER APPLY (SELECT A.ItemId, (A.ItemNFValorUnitario*A.ItemNFQtd)[nfvalor total]
+					FROM TbItemNotaFiscal A
+					WHERE A.NatOpTipo = 'M' AND
+							A.NatOpDescr like ('%VENDA%') AND
+							B.NFId = A.NFId) [A]
+
+
+WHERE
+		B.NFDataEmissao BETWEEN '01/01/2015' AND '31/05/2019'
+AND		B.NFStatus = 'I'
+
+
+GROUP BY
+		B.NFDataEmissao,
+		E.ReprApelidoNomeAbrev
+
+

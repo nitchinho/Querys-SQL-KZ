@@ -1,0 +1,13 @@
+SELECT	
+		CliId [Cód. Cliente],
+		NFValorTotalProdutos [Valor Total da NF],
+		NFDataEmissao [Data da Emissão],
+		NFStatusDescr
+		
+
+FROM
+		TbNotaFiscal
+WHERE
+		EmpId IN (2,3)
+AND		NFDataEmissao BETWEEN '2017-01-01' AND '2018-10-10'
+AND		NFStatusDescr = 'Impresso'

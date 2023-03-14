@@ -1,0 +1,32 @@
+SELECT
+		A.ItemEmpresaId [pro_codigo],
+		A.ItemBarrasId [pro_codbarras],
+		A.ItemDescr [pro_descricao],
+		A.UniMedAbrev [pro_unidade],
+		(1) [pro_aceitadesconto],
+		(1) [pro_bloqueiamultiplo],
+		ISNULL((CASE
+		WHEN (A.ItemQtdCaixasEmbDisplay >0) THEN ItemQtdCaixasEmbDisplay
+		WHEN (A.ItemQtdCaixasEmbFilha >0) THEN ItemQtdCaixasEmbFilha
+		WHEN (A.ItemQtdCaixasEmbMaster >0) THEN ItemQtdCaixasEmbMaster
+		END),1) [pro_multiplo],
+		ISNULL((CASE
+		WHEN (A.ItemQtdCaixasEmbDisplay >0) THEN ItemQtdCaixasEmbDisplay
+		WHEN (A.ItemQtdCaixasEmbFilha >0) THEN ItemQtdCaixasEmbFilha
+		WHEN (A.ItemQtdCaixasEmbMaster >0) THEN ItemQtdCaixasEmbMaster
+		END),1) [pro_minimo],
+		(isnull(B.ClassFisAliquotaIPI,0)) [pro_ipi],
+		A.ItemPrecoReferencia [pro_preco]
+		
+FROM
+			TbItem A
+LEFT JOIN	TbClassificacaoFiscal B
+			ON B.ClassFisId = A.ClassFisId
+WHERE
+		A.EmpId IN (2,3)
+AND		A.ItemBarrasId IS NOT NULL
+AND		A.ItemPrecoReferencia > 0
+AND		A.ClassFisId > 0
+
+ORDER BY
+		A.ItemId

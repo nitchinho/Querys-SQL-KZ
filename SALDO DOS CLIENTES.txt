@@ -1,0 +1,30 @@
+SELECT	
+		CASE
+		WHEN (A.EmpId = 5) THEN  '4-TEN LANDY'
+		WHEN (A.EmpId = 4) THEN  '3-DEPOSITO'
+		WHEN (A.EmpId = 3) THEN  '2-DOCES'
+		WHEN (A.EmpId = 2) THEN  '1-DTC'
+		END [EMPRESA],
+		
+		D1.ReprApelidoNomeAbrev [REPRESENTANTE],
+		A.CliId [COD CLIENTE],
+		B.CliNomeRazaoSocial [RAZAO SOCIAL],
+		ISNULL(C1.GpEconNome,'') [GRUPO ECONOMICO],
+		A.SdCtCliEmpValor [SALDO]
+
+FROM
+			TbSaldoContaClienteEmpresa A
+LEFT JOIN	TbCliente B
+			ON B.CliId = A.CliId
+LEFT JOIN	TbClienteGrupoEconomico C
+			ON C.CliId = A.CliId
+LEFT JOIN	TbGrupoEconomico C1
+			ON C1.GpEconId = C.GpEconId
+LEFT JOIN	TbRepresentanteCliente D
+			ON D.CliId = A.CliId
+LEFT JOIN	TbRepresentante D1
+			ON D1.ReprId = D.ReprId
+
+WHERE
+		
+A.SdCtCliEmpValor > 0
